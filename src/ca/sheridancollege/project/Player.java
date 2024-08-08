@@ -11,39 +11,80 @@ package ca.sheridancollege.project;
  * @author dancye
  * @author Paul Bonenfant Jan 2020
  */
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Player {
+    protected String playerID;
+    protected List<Card> hand;
+    protected int roundScore; // Score for the current round
+    protected int totalScore; // Total score across all rounds
 
-    private String name; //the unique name for this player
-
-    /**
-     * A constructor that allows you to set the player's unique ID
-     *
-     * @param name the unique ID to assign to this player.
-     */
-    public Player(String name) {
-        this.name = name;
+    public Player(String playerID) {
+        this.playerID = playerID;
+        this.hand = new ArrayList<>();
+        this.roundScore = 0;
+        this.totalScore = 0;
     }
 
-    /**
-     * @return the player name
-     */
-    public String getName() {
-        return name;
+    public String getPlayerID() {
+        return playerID;
     }
 
-    /**
-     * Ensure that the playerID is unique
-     *
-     * @param name the player name to set
-     */
-    public void setName(String name) {
-        this.name = name;
+    public int getRoundScore() {
+        return roundScore;
     }
 
-    /**
-     * The method to be overridden when you subclass the Player class with your specific type of Player and filled in
-     * with logic to play your game.
-     */
-    public abstract void play();
+    public int getTotalScore() {
+        return totalScore;
+    }
 
+    public void setHand(List<Card> newHand) {
+    this.hand = new ArrayList<>(newHand);
+}
+
+    public List<Card> getHand() {
+        return hand;
+    }
+
+    public void addCardToHand(Card card) {
+        hand.add(card);
+    }
+
+    public void removeCardFromHand(Card card) {
+        hand.remove(card);
+    }
+
+    public abstract Card playCard();
+
+    public abstract void passCards(List<Card> cardsToPass);
+
+    public void addPoints(int points) {
+        this.roundScore += points;
+    }
+
+    public void resetRoundScore() {
+        this.roundScore = 0;
+    }
+
+    public void updateTotalScore() {
+        this.totalScore += this.roundScore;
+    }
+    
+    public boolean isValidPlay(Card card, Card.Suit leadSuit) {
+    if (leadSuit == null) {
+        // First play of the trick
+        return true;
+    }
+    if (card.getSuit() == leadSuit) {
+        return true;
+    }
+    // Check if player has any cards of the lead suit
+    for (Card c : hand) {
+        if (c.getSuit() == leadSuit) {
+            return false;
+        }
+    }
+    return true;
+}
 }
